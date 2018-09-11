@@ -1,5 +1,0 @@
-http://serverapi.arcgisonline.com/jsapi/arcgis/?v=1.5 -------- js/arcgisonline.js
-basicfun ------基础功能的js方法
-http://serverapi.arcgisonline.com/jsapi/arcgis/1.5/js/dojo/dojox/gfx/svg.xd.js  ----js/svg.xd.js
-http://serverapi.arcgisonline.com/jsapi/arcgis/1.5/js/esri/nls/jsapi_zh-cn.xd.js  --- js/jsapi_zh-cn.xd.js
-http://serverapi.arcgisonline.com/jsapi/arcgis/1.5/css/jsapi.css    ----- css/jsapi.css
