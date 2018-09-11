@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>交通保障</title>
+    <link rel="stylesheet" href="arcgis_js_api/library/3.15/3.15/esri/css/esri.css">
+    <script src="arcgis_js_api/library/3.15/3.15/init.js"></script>
+    <script type="text/javascript" src="js/jquery-3.3.1-min.js"></script>
+    <script type="text/javascript" src="js/transferOfAxes.js"></script>
+    <script type="text/javascript" src="js/basicfun.js"></script>
+    <style type="text/css">
+        /* set title font properties */
+        .infowindow .window .top .right .user .titlebar .title { font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size:14pt; }
+        /* set content font properties */
+        .infowindow .window .top .right .user .content { font-style:italic; font-size:10pt; }
+        #testVideo{
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+    <script type="text/javascript">
+        //js文件中注释的内容有用，不能删
+        dojo.require("esri.map",
+                     "esri.geometry.point",
+                     "esri/graphic",
+                     "myModules/InfoWindow",
+                     "esri/InfoTemplate",
+                     "esri/geometry/Point",
+                     "esri.layers.GraphicsLayer",
+                     "dojo/on",
+                     "dojo/dom",
+                     "dojo/mouse",
+                     "dojo/dom-construct");
+        var map,lng,lat,infoWindow,InfoTemplate,facilitylocation,facilitynum, point,graphicsLayer,gaFacilitynum,gaFacilitylocation;
+        //var array = [[121.624453,31.130736],[121.619457,31.147505],[121.619066,31.147575]];
+        var gaFacilitynumArr = new Array();
+        var gaFacilitylocationArr = new Array();
+        function init() {
+            map = new esri.Map("map",{
+                extent: new esri.geometry.Extent({xmin:121.47,ymin:30.85,xmax:121.97,ymax:31.35,spatialReference:{wkid:4326}}),
+                zoom: 17,
+                infoWindow: infoWindow
+            });
+            //dojo的js事件
+            map.on("load",showPoint);
+            map.on("MouseMove",showCoordinates);
+            map.on("MouseDrag",showCoordinates);
+            //在线图层（外网情况下，arcgis官方的图层）
+            //map.addLayer(new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer"));
+
+            //向地图中添加图层1
+            var mapLayerOne =  new esri.layers.ArcGISDynamicMapServiceLayer("http://15.16.73.165:6080/arcgis/rest/services/jcmap/MapServer");
+            map.addLayer(mapLayerOne);
+
+            graphicsLayer = new esri.layers.GraphicsLayer();
+            map.addLayer(graphicsLayer);
+            // mapLayerTwo.setOpacity(0.5);  //设置图层为半透明
+        }
+        //getMapData();
+
+        //在地图上显示点的位置
+        function showPoint (map){
+            //map.infoWindow.resize(350, 350);
+            $.ajax({
+                 type: "post",
+                 url: "/getFacilityInformation",
+                 dataType:"json",
+                 success:function(data){
+                     for (var i in data){
+                         lng = data[i].jd; //转换前的经度（请求后台使用的坐标经度）
+                         lat = data[i].wd; //转换前的纬度（请求后台使用的坐标纬度）
+                         facilitylocation = data[i].facilitylocation;
+                         facilitynum = data[i].facilitynum;
+                         //百度坐标系 (BD-09) 与 WGS84 的转换
+                         //ShowLocation((transferOfAxes(121.517442,31.209645))[0],(transferOfAxes(121.517442,31.209645))[1]);
+                         var arr = transferOfAxes(lng,lat);
+                         ShowLocation(arr[0],arr[1],facilitylocation,facilitynum);
+                     }
+                     //点图层的点击事件
+                     graphicsLayer.on("click",showMonitoring);
+                     //测试点位在地图上是否准确
+                   /*  for (var i in array) {
+                         lng = array[i][0]; //转换前的经度（请求后台使用的坐标经度）
+                         lat = array[i][1]; //转换前的纬度（请求后台使用的坐标纬度）
+                         //百度坐标系 (BD-09) 与 WGS84 的转换
+                         //ShowLocation((transferOfAxes(121.517442,31.209645))[0],(transferOfAxes(121.517442,31.209645))[1]);
+                         var arr = transferOfAxes(lng, lat);
+                         ShowLocation(arr[0], arr[1]);
+                     }*/
+                 },
+                error:function(data){
+                },
+             });
+            //initToolbar(map);
+        }
+        dojo.addOnLoad(init);
+    </script>
+</head>
+<body class="tundra">
+<div style="border: 1px solid black;width:400px; height:400px;float: left">
+    <div  style="margin-top: 20px;margin-left: 5px;">
+        <table id="tablecla">
+
+    </table>
+        <button type="button" onclick="tijiao()">提交</button>
+    </div>
+</div>
+<div id="map" style="width:1000px; height:700px; border: 0px solid black;margin: auto;margin-top: 50px;margin-left: 500px">
+    <span id="info" style="position:absolute; right:25px; bottom:5px; color:#000; z-index:50;"></span>
+</div>
+</body>
+</html>
