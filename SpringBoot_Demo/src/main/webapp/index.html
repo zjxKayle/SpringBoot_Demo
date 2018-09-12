@@ -3,8 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>交通保障</title>
-    <link rel="stylesheet" href="css/esri.css">
-    <script type="text/javascript" src="js/init.js"></script>
+    <link rel="stylesheet" href="arcgis_js_api/library/3.15/3.15/esri/css/esri.css">
+    <script src="arcgis_js_api/library/3.15/3.15/init.js"></script>
     <script type="text/javascript" src="js/jquery-3.3.1-min.js"></script>
     <script type="text/javascript" src="js/transferOfAxes.js"></script>
     <script type="text/javascript" src="js/basicfun.js"></script>
@@ -37,10 +37,13 @@
         var gaFacilitylocationArr = new Array();
         function init() {
             map = new esri.Map("map",{
-                extent: new esri.geometry.Extent({xmin:121.47,ymin:30.85,xmax:121.97,ymax:31.35,spatialReference:{wkid:4326}}),
-                zoom: 17,
-                infoWindow: infoWindow
+                extent : new esri.geometry.Extent({xmin:121.47,ymin:30.85,xmax:121.97,ymax:31.35,spatialReference:{wkid:4326}}),
+                zoom : 8,
+                maxZoom : 9,//最大空间等级
+                minZoom : 5,//最小空间等级
+                infoWindow : infoWindow
             });
+            //map.setZoom(15);
             //dojo的js事件
             map.on("load",showPoint);
             map.on("MouseMove",showCoordinates);

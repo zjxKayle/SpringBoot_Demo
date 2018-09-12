@@ -10,12 +10,41 @@ function ShowLocation(x, y,facilitylocation,facilitynum) {
 //将点位的设备编号添加到交保路线中
 function addJb(gaFacilitynum,gaFacilitylocation) {
     gaFacilitynumArr.push(gaFacilitynum);
-    var html = " <tr><td style='font-size: smaller'>" +gaFacilitylocation+ "</td></tr>";
+    var html = " <tr onclick='deleJb(this)'>" +
+                    "<td style='font-size: smaller'>" +gaFacilitylocation+ "</td>" +
+                    "<td style='font-size: smaller;display: none' >" +gaFacilitynum+ "</td>" +
+                "</tr>";
     $("#tablecla").append(html);
 
 }
+
+function deleJb(obj) {
+    var deleFacilitynum = obj.lastChild.innerText;
+    var tr=obj.parentNode;
+    tr.removeChild(obj);
+    removeByValue(gaFacilitynumArr,deleFacilitynum);
+}
+
+//删除数组中指定的值
+function removeByValue(arr, val) {
+    for(var i=0; i<arr.length; i++) {
+        if(arr[i] == val) {
+            arr.splice(i, 1);
+            break;
+        }
+    }
+}
+
+
 function tijiao() {
-    alert(gaFacilitynumArr.toString());
+    $.ajax({
+        type : "post",
+        url : "",
+        data : gaFacilitynumArr,
+        success:function(data) {
+            alert("提交成功");
+        }
+    });
 }
 
 //获取鼠标的经纬坐标
@@ -30,7 +59,7 @@ function showMonitoring (evt) {
     gaFacilitynum =evt.graphic.attributes.facilitynum;   //设备编号
     var content = "设备位置："+gaFacilitylocation+"<br>" +
                   "设备编号:"+gaFacilitynum+"<br>" +
-                  "<button onclick='addJb(gaFacilitynum,gaFacilitylocation)'>添加到交保路线</button>";
+                  "<button onclick='addJb(gaFacilitynum,gaFacilitylocation)'>添加</button>";
     var facilitynum = evt.graphic.attributes.id;
     map.infoWindow.setTitle("监控信息");
     map.infoWindow.setContent(content);
